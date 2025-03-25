@@ -11,6 +11,8 @@
 - 📂 **Çoklu Dosya Desteği**: PDF, DOCX, HTML ve Markdown desteği
 - 🛡️ **Şifre Korumalı**: CLI üzerinden özel şifre belirleme
 
+[![YouTube Video](https://img.youtube.com/vi/pRmBqMkVZDY/0.jpg)](https://www.youtube.com/watch?v=pRmBqMkVZDY)
+
 ---
 
 ## Kurulum
