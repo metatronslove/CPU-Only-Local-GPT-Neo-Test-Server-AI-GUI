@@ -525,37 +525,49 @@ class TasteModelApp:
 			time.sleep(300)  # 5 dakikada bir
 
 	def load_file(self, e):
-		# Dosya bilgilerine e.files üzerinden erişim sağlanır
-		if not e.files:
-			with self.db.last_prompt_container:
-				ui.notify("Dosya seçilmedi!")
-			return
-
-		file_info = e.files[0]  # İlk dosyayı al
-		file_path = file_info.name  # Dosya adı
-		file_extension = os.path.splitext(file_path)[1].lower()  # Dosya uzantısı
-
 		try:
-			if file_extension in [".txt", ".py", ".js", ".css", ".sh", ".bat"]:
-				self.reference_text = read_txt(file_path)
+			# NiceGUI'nin yeni sürümlerinde dosya bilgileri farklı şekilde geliyor
+			if not hasattr(e, 'files') or not e.files:
+				with self.db.last_prompt_container:
+					ui.notify("Dosya seçilmedi!")
+				return
+
+			# İlk dosyayı al
+			uploaded_file = e.files[0]
+
+			# Dosya adı ve uzantısı
+			file_name = uploaded_file.name
+			file_extension = os.path.splitext(file_name)[1].lower()
+
+			# Dosya içeriğini işle
+			if file_extension in [".txt", ".py", ".js", ".css", ".sh", ".bat", ".md"]:
+				self.reference_text = uploaded_file.read().decode('utf-8')
 			elif file_extension == ".pdf":
-				self.reference_text = read_pdf(file_path)
+				# PDF gibi binary dosyalar için geçici dosya oluştur
+				with tempfile.NamedTemporaryFile(delete=False) as tmp:
+					tmp.write(uploaded_file.read())
+					tmp_path = tmp.name
+				self.reference_text = read_pdf(tmp_path)
+				os.unlink(tmp_path)
 			elif file_extension == ".docx":
-				self.reference_text = read_docx(file_path)
+				with tempfile.NamedTemporaryFile(delete=False) as tmp:
+					tmp.write(uploaded_file.read())
+					tmp_path = tmp.name
+				self.reference_text = read_docx(tmp_path)
+				os.unlink(tmp_path)
 			elif file_extension == ".html":
-				self.reference_text = read_html(file_path)
-			elif file_extension == ".md":
-				self.reference_text = read_markdown(file_path)
+				self.reference_text = uploaded_file.read().decode('utf-8')
 			else:
 				with self.db.last_prompt_container:
 					ui.notify("Desteklenmeyen dosya biçimi!")
 				return
 
 			with self.db.last_prompt_container:
-				ui.notify(f"Dosya yüklendi: {file_path}")
-		except Exception as e:
+				ui.notify(f"Dosya yüklendi: {file_name}")
+
+		except Exception as ex:
 			with self.db.last_prompt_container:
-				ui.notify(f"Dosya okuma hatası: {str(e)}")
+				ui.notify(f"Dosya işleme hatası: {str(ex)}")
 
 	@staticmethod
 	def get_cpu_temperature():
