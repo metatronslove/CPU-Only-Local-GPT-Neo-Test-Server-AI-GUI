@@ -90,7 +90,6 @@ Bu proje [AGPL-3.0 Lisansı](LICENSE) ile korunmaktadır. Ticari kullanımlar i�
 
 > **⚠️ Uyarı**: Yapay zeka modellerinin etik kullanımından tamamen siz sorumlusunuz.
 > **🔌 Sloganımız**: *"Fişini çekemediğin yapay zeka senin modelin değildir"*
-```
 
 ### Güncellenmiş Proje Yapısı
 
